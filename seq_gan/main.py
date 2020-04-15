@@ -44,11 +44,11 @@ TOTAL_BATCH = 100
 GENERATED_NUM = 1000
 ROOT_PATH =  '../models/imdb/'
 VOCAB_SIZE = 15000
-PRE_EPOCH_NUM = 10
+PRE_EPOCH_NUM = 2
 CHECKPOINT_PATH = ROOT_PATH + 'checkpoints/'
 DATA_FILE = '../data/imdb_sentences.txt'
-EMBED_FILE = "/home/scratch/dex/glove/glove.6B.200d.txt"
-#EMBED_FILE = "../glove/glove.6B.200d.txt"
+# EMBED_FILE = "/home/scratch/dex/glove/glove.6B.200d.txt"
+EMBED_FILE = "../glove/glove.6B.200d.txt"
 try:
     os.makedirs(CHECKPOINT_PATH)
 except OSError:
@@ -199,7 +199,7 @@ if opt.cuda:
 print('Pretrain with MLE ...')
 for epoch in range(PRE_EPOCH_NUM):
     loss = train_generator(generator, real_data_iterator, gen_criterion, gen_optimizer)
-    bleu_s = 0 #bleu_4(TEXT, corpus, generator, g_sequence_len, count=100)
+    bleu_s = bleu_4(TEXT, corpus, generator, g_sequence_len, count=100)
     print('Epoch [%d], loss: %f, bleu_4: %f'% (epoch, loss, bleu_s))
 
 # Pretrain Discriminator
