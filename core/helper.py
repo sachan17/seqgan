@@ -10,9 +10,9 @@ def load_data(file, g_sequence_len, bs, embed_file):
     return data_iterator, TEXT, tb
 
 def load_data_2(file, g_sequence_len, bs, embed_file):
-    file = 'data.csv'
-    g_sequence_len = 17
-    bs = 10
+    # file = 'data.csv'
+    # g_sequence_len = 17
+    # bs = 10
     TEXT = data.Field(lower=True, fix_length=g_sequence_len, batch_first=True, eos_token='<eos>', init_token='<sos>')
     LABEL = data.Field(sequential=False)
     tb = data.TabularDataset(file, format='tsv', fields=[('text', TEXT), ('label', LABEL)])

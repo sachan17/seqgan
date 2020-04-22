@@ -46,7 +46,8 @@ ROOT_PATH =  '../models/imdb/'
 VOCAB_SIZE = 15000
 PRE_EPOCH_NUM = 2
 CHECKPOINT_PATH = ROOT_PATH + 'checkpoints/'
-DATA_FILE = '../data/imdb_sentences.txt'
+# DATA_FILE = '../data/imdb_sentences.txt'
+DATA_FILE = '../data/data.tsv'
 # EMBED_FILE = "/home/scratch/dex/glove/glove.6B.200d.txt"
 EMBED_FILE = "../glove/glove.6B.200d.txt"
 try:
@@ -69,7 +70,7 @@ d_filter_sizes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15]
 d_num_filters = [100, 200, 200, 200, 200, 100, 100, 100, 100, 100, 160]
 
 d_dropout = 0.75
-d_num_class = 2
+d_num_class = 3
 # ================== Parameter Definition =================
 
 def train_generator(model, data_iter, criterion, optimizer):
@@ -170,7 +171,7 @@ random.seed(SEED)
 np.random.seed(SEED)
 # global VOCAB_SIZE
 
-real_data_iterator, TEXT, corpus = load_data(DATA_FILE, g_sequence_len, BATCH_SIZE, EMBED_FILE)
+real_data_iterator, TEXT, corpus = load_data_2(DATA_FILE, g_sequence_len, BATCH_SIZE, EMBED_FILE)
 VOCAB_SIZE = len(TEXT.vocab)
 print('VOCAB SIZE:', VOCAB_SIZE)
 
@@ -178,17 +179,25 @@ with open(CHECKPOINT_PATH + "TEXT.Field","wb")as f:
      dill.dump(TEXT,f)
      # TEXT=dill.load(f)
 
+aksp
+
 # Define Networks
 # nlayers = 2 # the number of nn.TransformerEncoderLayer in nn.TransformerEncoder
 # nhead = 2 # the number of heads in the multiheadattention models
 # dropout = 0.2 # the dropout value
 # generator = TransformerModel(VOCAB_SIZE, g_emb_dim, nhead, g_hidden_dim, nlayers, dropout)
 
-generator = Generator(VOCAB_SIZE, g_emb_dim, g_hidden_dim, opt.cuda)
-generator.emb.weight.data = TEXT.vocab.vectors
+# positive
+generator_1 = Generator(VOCAB_SIZE, g_emb_dim, g_hidden_dim, opt.cuda)
+generator_1.emb.weight.data = TEXT.vocab.vectors
+# negative
+generator_2 = Generator(VOCAB_SIZE, g_emb_dim, g_hidden_dim, opt.cuda)
+generator_2.emb.weight.data = TEXT.vocab.vectors
+
 discriminator = Discriminator(d_num_class, VOCAB_SIZE, d_emb_dim, d_filter_sizes, d_num_filters, d_dropout)
 if opt.cuda:
-    generator = generator.cuda()
+    generator_1 = generator_1.cuda()
+    generator_2 = generator_2.cuda()
     discriminator = discriminator.cuda()
 
 # Pretrain Generator using MLE
