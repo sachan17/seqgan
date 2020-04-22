@@ -25,7 +25,7 @@ from discriminator import Discriminator
 # from target_lstm import TargetLSTM
 from rollout import Rollout
 import pickle
-from nltk.translate.bleu_score import corpus_bleu
+# from nltk.translate.bleu_score import corpus_bleu
 import dill
 # from data_iter import GenDataIter, DisDataIter
 warnings.filterwarnings("ignore")
@@ -63,7 +63,6 @@ if opt.cuda is not None and opt.cuda >= 0:
 g_emb_dim = 200
 g_hidden_dim = 200
 g_sequence_len = 17
-
 # Discriminator Parameters
 d_emb_dim = 64
 d_filter_sizes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15]
@@ -171,7 +170,9 @@ random.seed(SEED)
 np.random.seed(SEED)
 # global VOCAB_SIZE
 
-real_data_iterator, TEXT, corpus = load_data_2(DATA_FILE, g_sequence_len, BATCH_SIZE, EMBED_FILE)
+corpus, TEXT, LABEL, label_names, label_datasets = load_data_2(DATA_FILE, g_sequence_len, EMBED_FILE)
+real_data_iterator = data.Iterator(corpus, batch_size=BATCH_SIZE)
+label_data_iterators = [data.Iterator(d, batch_size=BATCH_SIZE) for d in label_datasets]
 VOCAB_SIZE = len(TEXT.vocab)
 print('VOCAB SIZE:', VOCAB_SIZE)
 
@@ -179,7 +180,6 @@ with open(CHECKPOINT_PATH + "TEXT.Field","wb")as f:
      dill.dump(TEXT,f)
      # TEXT=dill.load(f)
 
-aksp
 
 # Define Networks
 # nlayers = 2 # the number of nn.TransformerEncoderLayer in nn.TransformerEncoder
@@ -187,30 +187,30 @@ aksp
 # dropout = 0.2 # the dropout value
 # generator = TransformerModel(VOCAB_SIZE, g_emb_dim, nhead, g_hidden_dim, nlayers, dropout)
 
-# positive
-generator_1 = Generator(VOCAB_SIZE, g_emb_dim, g_hidden_dim, opt.cuda)
-generator_1.emb.weight.data = TEXT.vocab.vectors
-# negative
-generator_2 = Generator(VOCAB_SIZE, g_emb_dim, g_hidden_dim, opt.cuda)
-generator_2.emb.weight.data = TEXT.vocab.vectors
-
+generators = []
+for label in label_names:
+    temp = Generator(label, VOCAB_SIZE, g_emb_dim, g_hidden_dim, opt.cuda)
+    temp.emb.weight.data = TEXT.vocab.vectors
+    generators.append(temp)
 discriminator = Discriminator(d_num_class, VOCAB_SIZE, d_emb_dim, d_filter_sizes, d_num_filters, d_dropout)
 if opt.cuda:
-    generator_1 = generator_1.cuda()
-    generator_2 = generator_2.cuda()
+    for i in label_names:
+        generators[i] = generators[i].cuda()
     discriminator = discriminator.cuda()
-
-# Pretrain Generator using MLE
-gen_criterion = nn.NLLLoss(size_average=False)
-gen_optimizer = optim.Adam(generator.parameters())
-if opt.cuda:
-    gen_criterion = gen_criterion.cuda()
+asd
+# Pretrain Generators using MLE
 print('Pretrain with MLE ...')
+gen_criterion = [nn.NLLLoss(size_average=False) for _ in label_names]
+gen_optimizer = [optim.Adam(generator.parameters()) for _ in label_names]
+if opt.cuda:
+    for i in range(gen_criterion):
+        gen_criterion[i] = gen_criterion[i].cuda()
 for epoch in range(PRE_EPOCH_NUM):
-    loss = train_generator(generator, real_data_iterator, gen_criterion, gen_optimizer)
-    bleu_s = bleu_4(TEXT, corpus, generator, g_sequence_len, count=100)
-    print('Epoch [%d], loss: %f, bleu_4: %f'% (epoch, loss, bleu_s))
-
+    for _ in label_names:
+        loss = train_generator(generators, real_data_iterator, gen_criterions, gen_optimizers)
+        bleu_s = bleu_4(TEXT, corpus, generator, g_sequence_len, count=100)
+        print('Epoch [%d], loss: %f, bleu_4: %f'% (epoch, loss, bleu_s))
+'''
 # Pretrain Discriminator
 dis_criterion = nn.NLLLoss(size_average=False)
 dis_optimizer = optim.Adam(discriminator.parameters())
@@ -271,3 +271,4 @@ for total_batch in range(TOTAL_BATCH):
 
 # if __name__ == '__main__':
     # main()
+'''

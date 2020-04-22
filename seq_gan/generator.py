@@ -12,8 +12,9 @@ from torch.autograd import Variable
 
 class Generator(nn.Module):
     """Generator """
-    def __init__(self, num_emb, emb_dim, hidden_dim, use_cuda):
+    def __init__(self, name, num_emb, emb_dim, hidden_dim, use_cuda):
         super(Generator, self).__init__()
+        self.name = name
         self.num_emb = num_emb
         self.emb_dim = emb_dim
         self.hidden_dim = hidden_dim
