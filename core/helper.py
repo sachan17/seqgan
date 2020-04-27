@@ -19,7 +19,7 @@ def load_data_2(file, g_sequence_len, embed_file):
     label_examples = [[] for _ in label_names]
     for each in tb:
         label_examples[label_names.index(each.label)].append(each)
-    label_datasets = [data.Dataset(label_examples[i], fields=[('text', data.Field())]) for i in range(len(label_names))]
+    label_datasets = [data.Dataset(label_examples[i], fields=[('text', TEXT)]) for i in range(len(label_names))]
 
     return tb, TEXT, LABEL, label_names, label_datasets
 

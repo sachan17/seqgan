@@ -44,10 +44,10 @@ TOTAL_BATCH = 100
 GENERATED_NUM = 1000
 ROOT_PATH =  '../models/imdb/'
 VOCAB_SIZE = 15000
-PRE_EPOCH_NUM = 2
+PRE_EPOCH_NUM = 5
 CHECKPOINT_PATH = ROOT_PATH + 'checkpoints/'
 # DATA_FILE = '../data/imdb_sentences.txt'
-DATA_FILE = '../data/data.tsv'
+DATA_FILE = '../data/data_small.tsv'
 # EMBED_FILE = "/home/scratch/dex/glove/glove.6B.200d.txt"
 EMBED_FILE = "../glove/glove.6B.200d.txt"
 try:
@@ -75,8 +75,8 @@ d_num_class = 3
 def train_generator(model, data_iter, criterion, optimizer):
     total_loss = 0.
     total_words = 0.
-    for each in data_iter:#
-    #for each in tqdm(data_iter, mininterval=2, desc=' - Generator Training', leave=False):
+    # for each in data_iter:#
+    for each in tqdm(data_iter, mininterval=2, desc=' - Generator Training', leave=False):
         data, target = each.text[:,:-1], each.text[:,1:]
         if opt.cuda:
             data, target = data.cuda(), target.cuda()
@@ -194,22 +194,22 @@ for label in label_names:
     generators.append(temp)
 discriminator = Discriminator(d_num_class, VOCAB_SIZE, d_emb_dim, d_filter_sizes, d_num_filters, d_dropout)
 if opt.cuda:
-    for i in label_names:
+    for i in range(len(label_names)):
         generators[i] = generators[i].cuda()
     discriminator = discriminator.cuda()
-asd
+
 # Pretrain Generators using MLE
 print('Pretrain with MLE ...')
-gen_criterion = [nn.NLLLoss(size_average=False) for _ in label_names]
-gen_optimizer = [optim.Adam(generator.parameters()) for _ in label_names]
+gen_criterions = [nn.NLLLoss(size_average=False) for _ in label_names]
+gen_optimizers = [optim.Adam(generators[i].parameters()) for i in range(len(label_names))]
 if opt.cuda:
-    for i in range(gen_criterion):
-        gen_criterion[i] = gen_criterion[i].cuda()
+    for i in range(len(label_names)):
+        gen_criterions[i] = gen_criterions[i].cuda()
 for epoch in range(PRE_EPOCH_NUM):
-    for _ in label_names:
-        loss = train_generator(generators, real_data_iterator, gen_criterions, gen_optimizers)
-        bleu_s = bleu_4(TEXT, corpus, generator, g_sequence_len, count=100)
-        print('Epoch [%d], loss: %f, bleu_4: %f'% (epoch, loss, bleu_s))
+    for i in range(len(label_names)):
+        loss = train_generator(generators[i], label_data_iterators[i], gen_criterions[i], gen_optimizers[i])
+        bleu_s = bleu_4(TEXT, corpus, generators[i], g_sequence_len, count=100)
+        print('Epoch [{}], Generator: {}, loss: {}, bleu_4: {}'.format(epoch, generators[i].name, loss, bleu_s))
 '''
 # Pretrain Discriminator
 dis_criterion = nn.NLLLoss(size_average=False)
