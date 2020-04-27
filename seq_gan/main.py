@@ -36,7 +36,7 @@ parser.add_argument('--test', action='store_true')
 opt = parser.parse_args()
 
 # Basic Training Paramters
-SEED = 88_small
+SEED = 88
 BATCH_SIZE = 100
 TOTAL_BATCH = 100
 GENERATED_NUM = 1000
@@ -45,7 +45,7 @@ VOCAB_SIZE = 15000
 PRE_EPOCH_NUM = 5
 CHECKPOINT_PATH = ROOT_PATH + 'checkpoints/'
 # DATA_FILE = '../data/imdb_sentences.txt'
-DATA_FILE = '../data/data.tsv'
+DATA_FILE = '../data/data_small.tsv'
 # EMBED_FILE = "/home/scratch/dex/glove/glove.6B.200d.txt"
 EMBED_FILE = "../glove/glove.6B.200d.txt"
 try:
