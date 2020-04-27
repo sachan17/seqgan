@@ -1,8 +1,6 @@
 # -*- coding:utf-8 -*-
 
 import sys
-sys.path.insert(0, '../core')
-
 from helper import *
 import os
 import random
@@ -38,7 +36,7 @@ parser.add_argument('--test', action='store_true')
 opt = parser.parse_args()
 
 # Basic Training Paramters
-SEED = 88
+SEED = 88_small
 BATCH_SIZE = 100
 TOTAL_BATCH = 100
 GENERATED_NUM = 1000
@@ -47,7 +45,7 @@ VOCAB_SIZE = 15000
 PRE_EPOCH_NUM = 5
 CHECKPOINT_PATH = ROOT_PATH + 'checkpoints/'
 # DATA_FILE = '../data/imdb_sentences.txt'
-DATA_FILE = '../data/data_small.tsv'
+DATA_FILE = '../data/data.tsv'
 # EMBED_FILE = "/home/scratch/dex/glove/glove.6B.200d.txt"
 EMBED_FILE = "../glove/glove.6B.200d.txt"
 try:
@@ -69,7 +67,7 @@ d_filter_sizes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15]
 d_num_filters = [100, 200, 200, 200, 200, 100, 100, 100, 100, 100, 160]
 
 d_dropout = 0.75
-d_num_class = 3
+d_num_class = None
 # ================== Parameter Definition =================
 
 def train_generator(model, data_iter, criterion, optimizer):
@@ -92,16 +90,22 @@ def train_generator(model, data_iter, criterion, optimizer):
         optimizer.step()
     return math.exp(total_loss / total_words)
 
-def train_discriminator(model, generator, data_iter, criterion, optimizer):
+def train_discriminator(model, generators, data_iter, criterion, optimizer):
     total_loss = 0.
     total_sents = 0.
     total_correct = 0.
-    for real_data in data_iter:
-    #for real_data in tqdm(data_iter, mininterval=2, desc=' - Discriminator Training', leave=False):
-        fake_data = generator.sample(BATCH_SIZE, g_sequence_len).detach().cpu()
+    # for real_data in data_iter:
+    for real_data in tqdm(data_iter, mininterval=2, desc=' - Discriminator Training', leave=False):
+        fake_data = []
+        fake_label = []
+        for i in range(len(generators)):
+            fake_data.append(generators[i].sample(BATCH_SIZE, g_sequence_len).detach().cpu())
+            fake_label.append(torch.zeros(BATCH_SIZE, dtype=torch.int64) + i + 1)
+        fake_data = torch.cat(fake_data)
+        fake_label = torch.cat(fake_label)
         data = torch.cat([real_data.text, fake_data])
-        target = torch.cat([torch.ones(real_data.text.shape[0], dtype=torch.int64), torch.zeros(BATCH_SIZE, dtype=torch.int64)])
-        shuffle_index = torch.randperm(real_data.text.shape[0] + BATCH_SIZE)
+        target = torch.cat([torch.zeros(real_data.text.shape[0], dtype=torch.int64), fake_label])
+        shuffle_index = torch.randperm(real_data.text.shape[0] + BATCH_SIZE*len(generators))
         data = data[shuffle_index]
         target = target[shuffle_index]
         if opt.cuda:
@@ -192,14 +196,12 @@ for label in label_names:
     temp = Generator(label, VOCAB_SIZE, g_emb_dim, g_hidden_dim, opt.cuda)
     temp.emb.weight.data = TEXT.vocab.vectors
     generators.append(temp)
-discriminator = Discriminator(d_num_class, VOCAB_SIZE, d_emb_dim, d_filter_sizes, d_num_filters, d_dropout)
 if opt.cuda:
     for i in range(len(label_names)):
         generators[i] = generators[i].cuda()
-    discriminator = discriminator.cuda()
 
 # Pretrain Generators using MLE
-print('Pretrain with MLE ...')
+print('Pretrain Generators ...')
 gen_criterions = [nn.NLLLoss(size_average=False) for _ in label_names]
 gen_optimizers = [optim.Adam(generators[i].parameters()) for i in range(len(label_names))]
 if opt.cuda:
@@ -210,7 +212,12 @@ for epoch in range(PRE_EPOCH_NUM):
         loss = train_generator(generators[i], label_data_iterators[i], gen_criterions[i], gen_optimizers[i])
         bleu_s = bleu_4(TEXT, corpus, generators[i], g_sequence_len, count=100)
         print('Epoch [{}], Generator: {}, loss: {}, bleu_4: {}'.format(epoch, generators[i].name, loss, bleu_s))
-'''
+
+d_num_class = len(label_names) + 1
+discriminator = Discriminator(d_num_class, VOCAB_SIZE, d_emb_dim, d_filter_sizes, d_num_filters, d_dropout)
+if opt.cuda:
+    discriminator = discriminator.cuda()
+
 # Pretrain Discriminator
 dis_criterion = nn.NLLLoss(size_average=False)
 dis_optimizer = optim.Adam(discriminator.parameters())
@@ -218,57 +225,56 @@ if opt.cuda:
     dis_criterion = dis_criterion.cuda()
 print('Pretrain Discriminator ...')
 for epoch in range(PRE_EPOCH_NUM):
-    loss, acc = train_discriminator(discriminator, generator, real_data_iterator, dis_criterion, dis_optimizer)
-    print('Epoch [%d], loss: %f, accuracy: %f' % (epoch, loss, acc))
-
+    loss, acc = train_discriminator(discriminator, generators, real_data_iterator, dis_criterion, dis_optimizer)
+    print('Epoch [{}], loss: {}, accuracy: {}'.format(epoch, loss, acc))
 
 # # Adversarial Training
-rollout = Rollout(generator, 0.8)
+rollouts = [Rollout(generator, 0.8) for generator in generators]
 print('#####################################################')
-print('Start Adversarial Training...\n')
-gen_gan_loss = GANLoss()
-gen_gan_optm = optim.Adam(generator.parameters())
+print('Start Adversarial Training...')
+gen_gan_losses = [GANLoss() for _ in generators]
+gen_gan_optm = [optim.Adam(generator.parameters()) for generator in generators]
 if opt.cuda:
     gen_gan_loss = gen_gan_loss.cuda()
-gen_criterion = nn.NLLLoss(size_average=False)
-if opt.cuda:
-    gen_criterion = gen_criterion.cuda()
-dis_criterion = nn.NLLLoss(size_average=False)
-dis_optimizer = optim.Adam(discriminator.parameters())
-if opt.cuda:
-    dis_criterion = dis_criterion.cuda()
+# gen_criterion = nn.NLLLoss(size_average=False)
+# if opt.cuda:
+    # gen_criterion = gen_criterion.cuda()
+# dis_criterion = nn.NLLLoss(size_average=False)
+# dis_optimizer = optim.Adam(discriminator.parameters())
+# if opt.cuda:
+    # dis_criterion = dis_criterion.cuda()
 for total_batch in range(TOTAL_BATCH):
     for _ in range(3):
-        samples = generator.sample(BATCH_SIZE, g_sequence_len)
-        zeros = torch.zeros((BATCH_SIZE, 1)).type(torch.LongTensor)
-        if samples.is_cuda:
-            zeros = zeros.cuda()
-        inputs = Variable(torch.cat([zeros, samples.data], dim = 1)[:, :-1].contiguous())
-        targets = Variable(samples.data).contiguous().view((-1,))
-        # calculate the reward
-        rewards = rollout.get_reward(samples, 16, discriminator)
-        rewards = Variable(torch.Tensor(rewards))
-        if opt.cuda:
-            rewards = rewards.cuda()
-        rewards = torch.exp(rewards).contiguous().view((-1,))
-        prob = generator.forward(inputs)
-        # print('SHAPE: ', prob.shape, targets.shape, rewards.shape)
-        loss = gen_gan_loss(prob, targets, rewards)
-        gen_gan_optm.zero_grad()
-        loss.backward()
-        gen_gan_optm.step()
-        # print('GEN PRED DIM: ', prob.shape)
+        for i in range(len(generators)):
+            samples = generators[i].sample(BATCH_SIZE, g_sequence_len)
+            zeros = torch.zeros((BATCH_SIZE, 1)).type(torch.LongTensor)
+            if samples.is_cuda:
+                zeros = zeros.cuda()
+            inputs = Variable(torch.cat([zeros, samples.data], dim = 1)[:, :-1].contiguous())
+            targets = Variable(samples.data).contiguous().view((-1,))
+            # calculate the reward
+            rewards = rollouts[i].get_reward(samples, 16, discriminator)
+            rewards = Variable(torch.Tensor(rewards))
+            if opt.cuda:
+                rewards = rewards.cuda()
+            rewards = torch.exp(rewards).contiguous().view((-1,))
+            prob = generators[i].forward(inputs)
+            loss = gen_gan_losses[i](prob, targets, rewards)
+            gen_gan_optm[i].zero_grad()
+            loss.backward()
+            gen_gan_optm[i].step()
 
     if total_batch % 10 == 0 or total_batch == TOTAL_BATCH - 1:
-        print('Saving with Bleu_4: %f' % (bleu_4(TEXT, corpus, generator, g_sequence_len, count=100)))
-        torch.save(generator.state_dict(), CHECKPOINT_PATH + 'generator_seqgan.model')
+        for generator in generators:
+            print('Saving generator {} with bleu_4: {}'.format(generator.name, bleu_4(TEXT, corpus, generator, g_sequence_len, count=100)))
+            torch.save(generator.state_dict(), CHECKPOINT_PATH + 'generator_seqgan_{}.model'.format(generator.name))
         torch.save(discriminator.state_dict(), CHECKPOINT_PATH + 'discriminator_seqgan.model')
-    rollout.update_params()
+    for rollout in rollouts:
+        rollout.update_params()
 
     for _ in range(1):
-        loss, acc = train_discriminator(discriminator, generator, real_data_iterator, dis_criterion, dis_optimizer)
+        loss, acc = train_discriminator(discriminator, generators, real_data_iterator, dis_criterion, dis_optimizer)
         print('Epoch [%d], loss: %f, accuracy: %f' % (total_batch, loss, acc))
 
 # if __name__ == '__main__':
     # main()
-'''

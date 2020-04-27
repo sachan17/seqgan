@@ -50,7 +50,6 @@ class Rollout(object):
             else:
                 rewards[seq_len-1] += pred
         rewards = np.transpose(np.array(rewards)) / (1.0 * num) # batch_size * seq_len
-        print('REWARD: ', rewards.shape)
         return rewards
 
     def update_params(self):
