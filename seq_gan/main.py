@@ -45,7 +45,7 @@ VOCAB_SIZE = 15000
 PRE_EPOCH_NUM = 5
 CHECKPOINT_PATH = ROOT_PATH + 'checkpoints/'
 # DATA_FILE = '../data/imdb_sentences.txt'
-DATA_FILE = '../data/data_small.tsv'
+DATA_FILE = '../data/data.tsv'
 # EMBED_FILE = "/home/scratch/dex/glove/glove.6B.200d.txt"
 EMBED_FILE = "../glove/glove.6B.200d.txt"
 try:
@@ -121,6 +121,9 @@ def train_discriminator(model, generators, data_iter, criterion, optimizer):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+    total_sents = torch.tensor(total_sents)
+    if opt.cuda:
+        total_sents = total_sents.cuda()
     return total_loss / total_sents, total_correct / total_sents
 
 def eval_epoch(model, data_iter, criterion):
@@ -235,7 +238,7 @@ print('Start Adversarial Training...')
 gen_gan_losses = [GANLoss() for _ in generators]
 gen_gan_optm = [optim.Adam(generator.parameters()) for generator in generators]
 if opt.cuda:
-    gen_gan_loss = gen_gan_loss.cuda()
+    gen_gan_loss = [gen_gan_loss.cuda() for gen_gan_loss in gen_gan_losses]
 # gen_criterion = nn.NLLLoss(size_average=False)
 # if opt.cuda:
     # gen_criterion = gen_criterion.cuda()
