@@ -39,7 +39,6 @@ BATCH_SIZE = 100
 TOTAL_BATCH = 100
 GENERATED_NUM = 1000
 ROOT_PATH =  '../models/'
-VOCAB_SIZE = 15000
 PRE_EPOCH_NUM = 5
 CHECKPOINT_PATH = ROOT_PATH + 'imdb/'
 # DATA_FILE = '../data/imdb_sentences.txt'
@@ -172,7 +171,6 @@ class GANLoss(nn.Module):
 # def main():
 random.seed(SEED)
 np.random.seed(SEED)
-# global VOCAB_SIZE
 
 corpus, TEXT, LABEL, label_names, label_datasets = load_data_2(DATA_FILE, g_sequence_len, EMBED_FILE)
 real_data_iterator = data.Iterator(corpus, batch_size=BATCH_SIZE)
