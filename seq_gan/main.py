@@ -30,21 +30,22 @@ warnings.filterwarnings("ignore")
 
 parser = argparse.ArgumentParser(description='Training Parameter')
 parser.add_argument('--cuda', action='store', default=None, type=int)
-parser.add_argument('--test', action='store_true')
+parser.add_argument('--server', action='store_true')
 opt = parser.parse_args()
-
 # Basic Training Paramters
+ROOT_PATH =  '../models/'
+CHECKPOINT_PATH = ROOT_PATH + 'imdb/'
 SEED = 88
 BATCH_SIZE = 100
 TOTAL_BATCH = 100
-GENERATED_NUM = 1000
-ROOT_PATH =  '../models/'
 PRE_EPOCH_NUM = 5
-CHECKPOINT_PATH = ROOT_PATH + 'imdb/'
-# DATA_FILE = '../data/imdb_sentences.txt'
-DATA_FILE = '../data/data.tsv'
-# EMBED_FILE = "/home/scratch/dex/glove/glove.6B.200d.txt"
 EMBED_FILE = "../glove/glove.6B.200d.txt"
+DATA_FILE = '../data/data.tsv'
+# DATA_FILE = '../data/imdb_sentences.txt'
+if opt.server:
+    TOTAL_BATCH = 1000
+    PRE_EPOCH_NUM = 150
+    EMBED_FILE = "/home/scratch/dex/glove/glove.6B.200d.txt"
 try:
     os.makedirs(CHECKPOINT_PATH)
 except OSError:
@@ -70,8 +71,9 @@ d_num_class = None
 def train_generator(model, data_iter, criterion, optimizer):
     total_loss = 0.
     total_words = 0.
-    # for each in data_iter:#
-    for each in tqdm(data_iter, mininterval=2, desc=' - Generator Training', leave=False):
+    if not opt.server:
+        data_iter = tqdm(data_iter, mininterval=2, desc=' - Generator Training', leave=False)
+    for each in data_iter:
         data, target = each.text[:,:-1], each.text[:,1:]
         if opt.cuda:
             data, target = data.cuda(), target.cuda()
@@ -91,8 +93,9 @@ def train_discriminator(model, generators, data_iter, criterion, optimizer):
     total_loss = 0.
     total_sents = 0.
     total_correct = 0.
-    # for real_data in data_iter:
-    for real_data in tqdm(data_iter, mininterval=2, desc=' - Discriminator Training', leave=False):
+    if not opt.server:
+        data_iter = tqdm(data_iter, mininterval=2, desc=' - Discriminator Training', leave=False)
+    for real_data in data_iter:
         fake_data = []
         fake_label = []
         for i in range(len(generators)):
