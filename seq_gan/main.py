@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 
 import sys
 from helper import *
@@ -25,7 +24,6 @@ from rollout import Rollout
 import pickle
 # from nltk.translate.bleu_score import corpus_bleu
 import dill
-# from data_iter import GenDataIter, DisDataIter
 warnings.filterwarnings("ignore")
 
 # ================== Parameter Definition =================
@@ -40,10 +38,10 @@ SEED = 88
 BATCH_SIZE = 100
 TOTAL_BATCH = 100
 GENERATED_NUM = 1000
-ROOT_PATH =  '../models/imdb/'
+ROOT_PATH =  '../models/'
 VOCAB_SIZE = 15000
 PRE_EPOCH_NUM = 5
-CHECKPOINT_PATH = ROOT_PATH + 'checkpoints/'
+CHECKPOINT_PATH = ROOT_PATH + 'imdb/'
 # DATA_FILE = '../data/imdb_sentences.txt'
 DATA_FILE = '../data/data.tsv'
 # EMBED_FILE = "/home/scratch/dex/glove/glove.6B.200d.txt"
@@ -171,7 +169,6 @@ class GANLoss(nn.Module):
         loss =  -torch.sum(loss)
         return loss
 
-
 # def main():
 random.seed(SEED)
 np.random.seed(SEED)
@@ -270,8 +267,8 @@ for total_batch in range(TOTAL_BATCH):
     if total_batch % 10 == 0 or total_batch == TOTAL_BATCH - 1:
         for generator in generators:
             print('Saving generator {} with bleu_4: {}'.format(generator.name, bleu_4(TEXT, corpus, generator, g_sequence_len, count=100)))
-            torch.save(generator.state_dict(), CHECKPOINT_PATH + 'generator_seqgan_{}.model'.format(generator.name))
-        torch.save(discriminator.state_dict(), CHECKPOINT_PATH + 'discriminator_seqgan.model')
+            torch.save(generator.state_dict(), CHECKPOINT_PATH + 'generator_seqgan_{}.gen'.format(generator.name))
+        torch.save(discriminator.state_dict(), CHECKPOINT_PATH + 'discriminator_seqgan.dis')
     for rollout in rollouts:
         rollout.update_params()
 
