@@ -14,7 +14,6 @@ warnings.filterwarnings("ignore")
 SEED = 88
 BATCH_SIZE = 100
 ROOT_PATH =  '../models/'
-PRE_EPOCH_NUM = 150
 CHECKPOINT_PATH = ROOT_PATH + 'imdb_pos_neg_1/'
 g_emb_dim = 200
 g_hidden_dim = 200
