@@ -1,18 +1,25 @@
 from torchtext import data, vocab
-# from nltk.translate.bleu_score import sentence_bleu
+from nltk.translate.bleu_score import sentence_bleu
 from tqdm import tqdm
+import spacy
+
+spacy_en = spacy.load('en')
+
+def tokenize_en(text):
+    return [tok.text for tok in spacy_en.tokenizer(text)]
+
+
+# def load_data(file, g_sequence_len, embed_file):
+#     TEXT = data.Field(lower=True, fix_length=g_sequence_len, batch_first=True, eos_token='<eos>', init_token='<sos>')
+#     tb = data.TabularDataset(file, format='csv', fields=[('text', TEXT)])
+#     TEXT.build_vocab(tb, vectors=vocab.Vectors(embed_file), min_freq=5)
+#     return tb, TEXT
 
 def load_data(file, g_sequence_len, embed_file):
     TEXT = data.Field(lower=True, fix_length=g_sequence_len, batch_first=True, eos_token='<eos>', init_token='<sos>')
-    tb = data.TabularDataset(file, format='csv', fields=[('text', TEXT)])
-    TEXT.build_vocab(tb, vectors=vocab.Vectors(embed_file), min_freq=5)
-    return data_iterator, TEXT, tb
-
-def load_data_2(file, g_sequence_len, embed_file):
-    TEXT = data.Field(lower=True, fix_length=g_sequence_len, batch_first=True, eos_token='<eos>', init_token='<sos>')
     LABEL = data.Field(sequential=False)
     tb = data.TabularDataset(file, format='tsv', fields=[('text', TEXT), ('label', LABEL)])
-    TEXT.build_vocab(tb, vectors=vocab.Vectors(embed_file), min_freq=5)
+    TEXT.build_vocab(tb, vectors=vocab.Vectors(embed_file), min_freq=3)
     # TEXT.build_vocab(tb, min_freq=5)
     LABEL.build_vocab(tb)
     label_names = LABEL.vocab.itos[1:]
@@ -22,6 +29,14 @@ def load_data_2(file, g_sequence_len, embed_file):
     label_datasets = [data.Dataset(label_examples[i], fields=[('text', TEXT)]) for i in range(len(label_names))]
 
     return tb, TEXT, LABEL, label_names, label_datasets
+
+def load_conv_data(file, g_sequence_len, embed_file):
+    TEXT = data.Field(tokenize = tokenize_en, lower=True, fix_length=g_sequence_len, batch_first=True, eos_token='<eos>', init_token='<sos>')
+    LABEL = data.Field(sequential=False)
+    tb = data.TabularDataset(file, format='tsv', fields=[('text1', TEXT), ('text2', TEXT), ('label', LABEL)])
+    TEXT.build_vocab(tb, vectors=vocab.Vectors(embed_file), min_freq=3)
+    LABEL.build_vocab(tb)
+    return tb, TEXT, LABEL
 
 def convert_to_text(TEXT, list_of_sent):
     list_of_sent = list_of_sent.detach().cpu()

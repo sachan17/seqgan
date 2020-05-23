@@ -175,7 +175,7 @@ class GANLoss(nn.Module):
 random.seed(SEED)
 np.random.seed(SEED)
 
-corpus, TEXT, LABEL, label_names, label_datasets = load_data_2(DATA_FILE, g_sequence_len, EMBED_FILE)
+corpus, TEXT, LABEL, label_names, label_datasets = load_data(DATA_FILE, g_sequence_len, EMBED_FILE)
 real_data_iterator = data.Iterator(corpus, batch_size=BATCH_SIZE)
 label_data_iterators = [data.Iterator(d, batch_size=BATCH_SIZE) for d in label_datasets]
 VOCAB_SIZE = len(TEXT.vocab)
