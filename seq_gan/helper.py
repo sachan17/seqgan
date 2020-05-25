@@ -17,12 +17,12 @@ def tokenize_en(text):
 
 def load_data(file, g_sequence_len, embed_file):
     TEXT = data.Field(lower=True, fix_length=g_sequence_len, batch_first=True, eos_token='<eos>', init_token='<sos>')
-    LABEL = data.Field(sequential=False)
+    LABEL = data.Field(sequential=False, unk_token=None)
     tb = data.TabularDataset(file, format='tsv', fields=[('text', TEXT), ('label', LABEL)])
     TEXT.build_vocab(tb, vectors=vocab.Vectors(embed_file), min_freq=3)
     # TEXT.build_vocab(tb, min_freq=5)
     LABEL.build_vocab(tb)
-    label_names = LABEL.vocab.itos[1:]
+    label_names = LABEL.vocab.itos
     label_examples = [[] for _ in label_names]
     for each in tb:
         label_examples[label_names.index(each.label)].append(each)
@@ -30,11 +30,14 @@ def load_data(file, g_sequence_len, embed_file):
 
     return tb, TEXT, LABEL, label_names, label_datasets
 
-def load_conv_data(file, g_sequence_len, embed_file):
+def load_conv_data(file, g_sequence_len, embed_file=None, min_freq=3):
     TEXT = data.Field(tokenize = tokenize_en, lower=True, fix_length=g_sequence_len, batch_first=True, eos_token='<eos>', init_token='<sos>')
-    LABEL = data.Field(sequential=False)
+    LABEL = data.Field(sequential=False, unk_token=None)
     tb = data.TabularDataset(file, format='tsv', fields=[('text1', TEXT), ('text2', TEXT), ('label', LABEL)])
-    TEXT.build_vocab(tb, vectors=vocab.Vectors(embed_file), min_freq=3)
+    if embed_file:
+        TEXT.build_vocab(tb, vectors=vocab.Vectors(embed_file), min_freq=min_freq)
+    else:
+        TEXT.build_vocab(tb, min_freq=min_freq)
     LABEL.build_vocab(tb)
     return tb, TEXT, LABEL
 

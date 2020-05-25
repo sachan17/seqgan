@@ -6,7 +6,6 @@ import random
 import math
 import argparse
 from tqdm import tqdm
-import warnings
 import numpy as np
 import torchtext
 from torchtext import data
@@ -24,6 +23,7 @@ from rollout import Rollout
 import pickle
 # from nltk.translate.bleu_score import corpus_bleu
 import dill
+import warnings
 warnings.filterwarnings("ignore")
 
 # ================== Parameter Definition =================

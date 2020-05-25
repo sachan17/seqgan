@@ -423,9 +423,9 @@ I stepped in something icky.	Sticky shoes, sticky shoes, always make me smile. S
 God, it's gonna so weird like when I come home and you're not here.	Y'know?	neutral
 Y'know?	No more Joey and Chan's.	sadness
 No more Joey and Chan's.	No more J and C's.	sadness
-No more J and C's.	"You wanna go over to Joey and Chandler's?"	neutral
-"You wanna go over to Joey and Chandler's?"	"Can't, its not there."	neutral
-"Can't, its not there."	Look, I'm just gonna be across the hall, we can still do all the same stuff.	neutral
+No more J and C's.	You wanna go over to Joey and Chandler's?	neutral
+You wanna go over to Joey and Chandler's?	Can't, its not there.	neutral
+Can't, its not there.	Look, I'm just gonna be across the hall, we can still do all the same stuff.	neutral
 Look, I'm just gonna be across the hall, we can still do all the same stuff.	Yeah but we won't be able to like get up in the middle of the night and have those long talks about our feelings and the future.	sadness
 Yeah but we won't be able to like get up in the middle of the night and have those long talks about our feelings and the future.	Not once did we do that.	neutral
 Not once did we do that.	Hi.	neutral
@@ -544,7 +544,7 @@ Oh, Chandler, look. You and Monica are meant to have children.    I am sure it's
 oh, oh, yeah, ok, thanks.	I can't believe    I didn't even think of that.	surprise
 I can't believe    I didn't even think of that.	I guess I was just so worried about having to...    come here and do... 'that'...	non-neutral
 I guess I was just so worried about having to...    come here and do... 'that'...	What, you can do it in the parking lot of a Taco Bell, but you    can't do it at a doctor's office?	non-neutral
-What, you can do it in the parking lot of a Taco Bell, but you    can't do it at a doctor's office?	It was a "Wendy's!!    "	non-neutral
+What, you can do it in the parking lot of a Taco Bell, but you    can't do it at a doctor's office?	It was a Wendy's!!    	non-neutral
 ...and then Zana, just let one rip!!	Look, not that I enjoy talking about people who I went to high school with, cause I do, but umm, maybe we could talk about something else?	disgust
 Look, not that I enjoy talking about people who I went to high school with, cause I do, but umm, maybe we could talk about something else?	Like you, I don't even know where you work?	surprise
 Like you, I don't even know where you work?	Yeah.	neutral
@@ -873,8 +873,8 @@ See, I told you they don't swim.	Wait. Give him a minute.	neutral
 Wait. Give him a minute.	Noo!  Oh, it's okay, it's okay, baby, baby, baby.	fear
 Me taking care of you is no problem, huh?	You guys feel safe.	neutral
 You guys feel safe.	Right?	neutral
-Right?	Okay, I'm gonna take that spit bubble as, "Yeah, I do!"	neutral
-Okay, I'm gonna take that spit bubble as, "Yeah, I do!"	Okay, after I get rid of this dirty diaper Leslie, I'll set you up with a clean one.	neutral
+Right?	Okay, I'm gonna take that spit bubble as, Yeah, I do!	neutral
+Okay, I'm gonna take that spit bubble as, Yeah, I do!	Okay, after I get rid of this dirty diaper Leslie, I'll set you up with a clean one.	neutral
 Okay, after I get rid of this dirty diaper Leslie, I'll set you up with a clean one.	Okay, I'm sorry.	sadness
 Okay, I'm sorry.	I didn't mean to scare you.	sadness
 I didn't mean to scare you.	I just have to clean that up.	neutral
@@ -969,7 +969,7 @@ Are we okay now?	Yeah. No. No...	anger
 Yeah. No. No...	Ah, the forbidden love of a man and his door.	neutral
 Ah, the forbidden love of a man and his door.	Shh. He did it. He told her off, and not just about the kiss, about everything.	neutral
 Shh. He did it. He told her off, and not just about the kiss, about everything.	You're kidding.	surprise
-You're kidding.	No, no. He said "When are you gonna grow up and start being a mom?"	neutral
+You're kidding.	No, no. He said When are you gonna grow up and start being a mom?	neutral
 Oh there it is.	That's not your regular dry cleaners.	neutral
 That's not your regular dry cleaners.	I know, but that creep that I went on that date with goes to there so I have to find a new one.	disgust
 I know, but that creep that I went on that date with goes to there so I have to find a new one.	I also have to find a new video store, a new bank, a new adult bookstore, a new grocery store	disgust
@@ -1065,8 +1065,8 @@ Well, I like that idea.	Obviously!	joy
 Obviously!	I was thinking maybe-maybe-maybe it could be a game room, y'know?	neutral
 I was thinking maybe-maybe-maybe it could be a game room, y'know?	I mean you can buy old arcade games like uh, like	neutral
 I mean you can buy old arcade games like uh, like	No.	disgust
-No.	Okay so you mean no as in, "Gee Chandler, what an interesting idea. Let's discuss it before we reject it completely."	non-neutral
-Okay so you mean no as in, "Gee Chandler, what an interesting idea. Let's discuss it before we reject it completely."	Oh, I'm sorry. Of course I mean that. Interesting idea, umm, talk about it, but no.	disgust
+No.	Okay so you mean no as in, Gee Chandler, what an interesting idea. Let's discuss it before we reject it completely.	non-neutral
+Okay so you mean no as in, Gee Chandler, what an interesting idea. Let's discuss it before we reject it completely.	Oh, I'm sorry. Of course I mean that. Interesting idea, umm, talk about it, but no.	disgust
 Oh, I'm sorry. Of course I mean that. Interesting idea, umm, talk about it, but no.	So, that's it?	surprise
 So, that's it?	I just don't think arcade games go in the beautiful guest room. The beautiful guest room is gonna be filled with antiques.	neutral
 I just don't think arcade games go in the beautiful guest room. The beautiful guest room is gonna be filled with antiques.	Which is why	neutral
@@ -1085,15 +1085,15 @@ I don't know.	This is so great! Now we can enter into doubles tournaments!	joy
 This is so great! Now we can enter into doubles tournaments!	That's	neutral
 Hey!	Hey. Okay, I gave him another chance, but Tim has	neutral
 Hey. Okay, I gave him another chance, but Tim has	But	neutral
-But	No! No-no! He is totally incompetent. I called the chef who recommended him to me. He said, "Ha-ha! Gotcha!"	disgust
-No! No-no! He is totally incompetent. I called the chef who recommended him to me. He said, "Ha-ha! Gotcha!"	Okay. Okay, but you can't fire him today.	neutral
+But	No! No-no! He is totally incompetent. I called the chef who recommended him to me. He said, Ha-ha! Gotcha!	disgust
+No! No-no! He is totally incompetent. I called the chef who recommended him to me. He said, Ha-ha! Gotcha!	Okay. Okay, but you can't fire him today.	neutral
 Okay. Okay, but you can't fire him today.	Why not?!	non-neutral
 Why not?!	Because I'm dumping him today.	non-neutral
 Because I'm dumping him today.	What?! You said he was sweet!	surprise
 What?! You said he was sweet!	He	neutral
 He	Just don't pick up your phone.	neutral
-Just don't pick up your phone.	Then he comes over!  "I'm so worried about you." Uck! Be a man!	disgust
-Then he comes over!  "I'm so worried about you." Uck! Be a man!	What? So now I'm not allowed to fire him?	surprise
+Just don't pick up your phone.	Then he comes over!  I'm so worried about you. Uck! Be a man!	disgust
+Then he comes over!  I'm so worried about you. Uck! Be a man!	What? So now I'm not allowed to fire him?	surprise
 What? So now I'm not allowed to fire him?	You can't fire him and dump him the same day, he'll kill himself.	non-neutral
 You can't fire him and dump him the same day, he'll kill himself.	Okay well then, I'll fire him today and you go out with him for another week.	neutral
 Okay well then, I'll fire him today and you go out with him for another week.	Are you kidding?! Another week with that sip, I'll kill	disgust
@@ -1940,8 +1940,8 @@ Bob. Bob! Bob!!!  What the hell are you doing?!	I just found out this is Chandle
 Chandler, we said we would meet at the coffeehouse at six.	We said seven!	anger
 We said seven!	We said six!	anger
 We said six!	The only way that I said six would be if the seven's, let meet at seven, not at six.	neutral
-The only way that I said six would be if the seven's, let meet at seven, not at six.	Yeah and if I had seven, maybe I would've said something like this, "Wow! My boyfriend's such a wise assseven!"	anger
-Yeah and if I had seven, maybe I would've said something like this, "Wow! My boyfriend's such a wise assseven!"	Hi!	joy
+The only way that I said six would be if the seven's, let meet at seven, not at six.	Yeah and if I had seven, maybe I would've said something like this, Wow! My boyfriend's such a wise assseven!	anger
+Yeah and if I had seven, maybe I would've said something like this, Wow! My boyfriend's such a wise assseven!	Hi!	joy
 Hi!	Oh my good God.	disgust
 Oh my good God.	Ugh!	disgust
 Ugh!	I know what time you said.	non-neutral
@@ -2093,8 +2093,8 @@ It's uh, right through there.	Okay.  God y'know, if someone told me a week ago t
 Okay.  God y'know, if someone told me a week ago that I would be peeing in Joey Tribbiani's apartment	Yeah, life's pretty great isn't it?	joy
 Yeah, life's pretty great isn't it?	Yeah, it sure is!	joy
 You know, I think I was sixteen.	Please, just a little bit off the back.	neutral
-Please, just a little bit off the back.	I'm still on "no."	neutral
-I'm still on "no."	Uh, morning. Do you guys think you could close your eyes for just a sec?	neutral
+Please, just a little bit off the back.	I'm still on no.	neutral
+I'm still on no.	Uh, morning. Do you guys think you could close your eyes for just a sec?	neutral
 Uh, morning. Do you guys think you could close your eyes for just a sec?	No-no-no-no-no,  I'm not fallin' for that again.	anger
 No-no-no-no-no,  I'm not fallin' for that again.	What's goin' on?	neutral
 What's goin' on?	Well, I sorta did a stupid thing last night.	neutral
@@ -2167,8 +2167,8 @@ It's creamier.	Yeah, well, is that	neutral
 Yeah, well, is that	I don't know. We're talking about whipped fish, Monica. I'm just happy I'm keeping it down, y'know?	disgust
 I don't know. We're talking about whipped fish, Monica. I'm just happy I'm keeping it down, y'know?	My God! What happened to you?	surprise
 My God! What happened to you?	Eight and a half hours of aptitude tests, intelligence tests, personality tests... and what do I learn?	disgust
-Eight and a half hours of aptitude tests, intelligence tests, personality tests... and what do I learn?	"You are ideally suited for a career in data processing for a large multinational corporation."	non-neutral
-"You are ideally suited for a career in data processing for a large multinational corporation."	That's so great! 'Cause you already know how to do that!	joy
+Eight and a half hours of aptitude tests, intelligence tests, personality tests... and what do I learn?	You are ideally suited for a career in data processing for a large multinational corporation.	non-neutral
+You are ideally suited for a career in data processing for a large multinational corporation.	That's so great! 'Cause you already know how to do that!	joy
 That's so great! 'Cause you already know how to do that!	Can you believe it? I mean, don't I seem like somebody who should be doing something really	non-neutral
 Can you believe it? I mean, don't I seem like somebody who should be doing something really	Oh Chandler, I know, I know... oh, hey! You can see your nipples through this shirt!	non-neutral
 Oh Chandler, I know, I know... oh, hey! You can see your nipples through this shirt!	Here you go, maybe this'll cheer you up.	joy
@@ -2462,8 +2462,8 @@ Do	Yeah, sure?	neutral
 Yeah, sure?	So do I.	neutral
 So do I.	Okay Rach, before anything happens  I just want to lay down a couple of ground rules.	neutral
 Okay Rach, before anything happens  I just want to lay down a couple of ground rules.	This is just about tonight.	neutral
-This is just about tonight.	I don't to go through with this if it's going to raise the question of "Us."	neutral
-I don't to go through with this if it's going to raise the question of "Us."	Okay?	neutral
+This is just about tonight.	I don't to go through with this if it's going to raise the question of Us.	neutral
+I don't to go through with this if it's going to raise the question of Us.	Okay?	neutral
 Okay?	I just want this to be  about what it is!	non-neutral
 I just want this to be  about what it is!	And um, what-what is that Ross?	non-neutral
 And um, what-what is that Ross?	The physical act of love.	joy
