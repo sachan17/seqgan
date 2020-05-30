@@ -36,12 +36,12 @@ opt = parser.parse_args()
 ROOT_PATH =  '../models/'
 CHECKPOINT_PATH = ROOT_PATH + 'imdb/'
 SEED = 88
-BATCH_SIZE = 10
+BATCH_SIZE = 5
 TOTAL_BATCH = 100
 PRE_EPOCH_NUM = 5
 EMBED_FILE = "../glove/glove.6B.200d.txt"
 # DATA_FILE = '../data/data.tsv'
-DATA_FILE = '../data/friends_train.tsv'
+DATA_FILE = '../data/friends_test.tsv'
 # DATA_FILE = '../data/imdb_sentences.txt'
 if opt.server:
     TOTAL_BATCH = 1000
@@ -60,7 +60,7 @@ if opt.cuda is not None and opt.cuda >= 0:
 n_layers = 2
 g_emb_dim = 200
 g_hidden_dim = 200
-g_sequence_len = 17
+g_sequence_len = 20
 g_dropout = 0.75
 clip = 1
 # Discriminator Parameters
@@ -98,17 +98,19 @@ def train_seq2seq_generator(model, data_iter, criterion, optimizer, clip):
     for batch in data_iter:
         src = batch.text1
         trg = batch.text2
+        if opt.cuda:
+            src, trg = src.cuda(), trg.cuda()
         optimizer.zero_grad()
         output = model(src, trg)
         output_dim = output.shape[-1]
         output = output[1:].view(-1, output_dim)
-        trg = trg[1:].view(-    1)
+        trg = trg[1:].view(-1)
         loss = criterion(output, trg)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
         optimizer.step()
         epoch_loss += loss.item()
-    return epoch_loss / len(iterator)
+    return epoch_loss / len(data_iter)
 
 
 def train_discriminator(model, generators, data_iter, criterion, optimizer):
@@ -202,15 +204,15 @@ real_data_iterator = data.Iterator(corpus, batch_size=BATCH_SIZE)
 label_data_iterators = [data.Iterator(d, batch_size=BATCH_SIZE) for d in label_datasets]
 VOCAB_SIZE = len(TEXT.vocab)
 print('VOCAB SIZE:', VOCAB_SIZE)
-
+print(corpus.fields['label'].vocab.freqs)
+# exit(0)
 
 with open(CHECKPOINT_PATH + "TEXT.Field","wb")as f:
      dill.dump(TEXT,f)
      # TEXT=dill.load(f)
-
 generators = []
 for label in label_names:
-    temp = Seq2Seq(VOCAB_SIZE, g_emb_dim, g_hidden_dim, n_layers, g_dropout, g_dropout, opt.cuda)
+    temp = Seq2Seq(label, VOCAB_SIZE, g_emb_dim, g_hidden_dim, n_layers, g_dropout, g_dropout, opt.cuda)
     temp.encoder.embedding.weight.data = TEXT.vocab.vectors
     temp.decoder.embedding.weight.data = TEXT.vocab.vectors
     # temp = Generator(label, VOCAB_SIZE, g_emb_dim, g_hidden_dim, opt.cuda)
@@ -219,7 +221,7 @@ for label in label_names:
 if opt.cuda:
     for i in range(len(label_names)):
         generators[i] = generators[i].cuda()
-
+exit(0)
 # Pretrain Generators using MLE
 print('Pretrain Generators ...')
 # gen_criterions = [nn.NLLLoss(size_average=False) for _ in label_names]
@@ -233,9 +235,9 @@ for epoch in range(PRE_EPOCH_NUM):
         loss = train_seq2seq_generator(generators[i], label_data_iterators[i], gen_criterions[i], gen_optimizers[i], clip)
         # loss = train_generator(generators[i], label_data_iterators[i], gen_criterions[i], gen_optimizers[i])
         bleu_s = 0#bleu_4(TEXT, corpus, generators[i], g_sequence_len, count=100)
-        print('Epoch [{}], Generator: {}, loss: {}, bleu_4: {}'.format(epoch, generators[i].name, loss, bleu_s))
+        print('Epoch [{}], Generator: {}, loss: {}, Perplexity: {}'.format(epoch, generators[i].name, loss, math.exp(loss)))
+    print('-'*25)
 
-exit(0)
 
 d_num_class = len(label_names) + 1
 discriminator = Discriminator(d_num_class, VOCAB_SIZE, d_emb_dim, d_filter_sizes, d_num_filters, d_dropout)

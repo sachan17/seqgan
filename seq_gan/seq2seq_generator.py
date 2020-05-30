@@ -51,8 +51,9 @@ class Decoder(nn.Module):
 
 
 class Seq2Seq(nn.Module):
-    def __init__(self, vocab_dim, emb_dim, hid_dim, n_layers, enc_dropout, dec_dropout, use_cuda):
+    def __init__(self, name, vocab_dim, emb_dim, hid_dim, n_layers, enc_dropout, dec_dropout, use_cuda):
         super().__init__()
+        self.name = name
         self.encoder = Encoder(vocab_dim, emb_dim, hid_dim, n_layers, enc_dropout)
         self.decoder = Decoder(vocab_dim, emb_dim, hid_dim, n_layers, dec_dropout)
         # self.device = device
@@ -79,6 +80,24 @@ class Seq2Seq(nn.Module):
             top1 = output.argmax(1)
             input = trg[t] if teacher_force else top1
         return outputs
+
+    def sample(self, src, TEXT):
+        batch_size = src.shape[0]
+        max_len = 20
+        outputs = torch.zeros(max_len, batch_size)
+        if self.use_cuda:
+            outputs = outputs.cuda()
+        hidden, cell = self.encoder(src)
+        input = src[:,0]
+        i = 1
+        while i < max_len:
+            output, hidden, cell = self.decoder(input, hidden, cell)
+            print(output.shape)
+            outputs[i] = input = output.argmax(1)
+            i += 1
+        print(outputs.shape)
+        return outputs
+
 
     def init_weights(self):
         for param in self.parameters():
