@@ -36,12 +36,12 @@ opt = parser.parse_args()
 ROOT_PATH =  '../models/'
 CHECKPOINT_PATH = ROOT_PATH + 'imdb/'
 SEED = 88
-BATCH_SIZE = 5
+BATCH_SIZE = 100
 TOTAL_BATCH = 100
 PRE_EPOCH_NUM = 5
 EMBED_FILE = "../glove/glove.6B.200d.txt"
 # DATA_FILE = '../data/data.tsv'
-DATA_FILE = '../data/friends_test.tsv'
+DATA_FILE = '../data/friends_train.tsv'
 # DATA_FILE = '../data/imdb_sentences.txt'
 if opt.server:
     TOTAL_BATCH = 1000
@@ -96,15 +96,15 @@ def train_generator(model, data_iter, criterion, optimizer):
 def train_seq2seq_generator(model, data_iter, criterion, optimizer, clip):
     epoch_loss = 0
     for batch in data_iter:
-        src = batch.text1
-        trg = batch.text2
+        src = batch.text1 #[batch_size, seq_len]
+        trg = batch.text2 #[batch_size, seq_len]
         if opt.cuda:
             src, trg = src.cuda(), trg.cuda()
         optimizer.zero_grad()
         output = model(src, trg)
         output_dim = output.shape[-1]
         output = output[1:].view(-1, output_dim)
-        trg = trg[1:].view(-1)
+        trg = trg[1:].reshape(-1)
         loss = criterion(output, trg)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
@@ -221,24 +221,25 @@ for label in label_names:
 if opt.cuda:
     for i in range(len(label_names)):
         generators[i] = generators[i].cuda()
-exit(0)
+
+# exit(0)
 # Pretrain Generators using MLE
-print('Pretrain Generators ...')
-# gen_criterions = [nn.NLLLoss(size_average=False) for _ in label_names]
-gen_criterions = [nn.CrossEntropyLoss(ignore_index=TEXT.vocab.stoi[TEXT.pad_token]) for _ in label_names]
-gen_optimizers = [optim.Adam(generators[i].parameters()) for i in range(len(label_names))]
-if opt.cuda:
-    for i in range(len(label_names)):
-        gen_criterions[i] = gen_criterions[i].cuda()
-for epoch in range(PRE_EPOCH_NUM):
-    for i in range(len(label_names)):
-        loss = train_seq2seq_generator(generators[i], label_data_iterators[i], gen_criterions[i], gen_optimizers[i], clip)
-        # loss = train_generator(generators[i], label_data_iterators[i], gen_criterions[i], gen_optimizers[i])
-        bleu_s = 0#bleu_4(TEXT, corpus, generators[i], g_sequence_len, count=100)
-        print('Epoch [{}], Generator: {}, loss: {}, Perplexity: {}'.format(epoch, generators[i].name, loss, math.exp(loss)))
-    print('-'*25)
+# print('Pretrain Generators ...')
+# # gen_criterions = [nn.NLLLoss(size_average=False) for _ in label_names]
+# gen_criterions = [nn.CrossEntropyLoss(ignore_index=TEXT.vocab.stoi[TEXT.pad_token]) for _ in label_names]
+# gen_optimizers = [optim.Adam(generators[i].parameters()) for i in range(len(label_names))]
+# if opt.cuda:
+#     for i in range(len(label_names)):
+#         gen_criterions[i] = gen_criterions[i].cuda()
+# for epoch in range(PRE_EPOCH_NUM):
+#     for i in range(len(label_names)):
+#         loss = train_seq2seq_generator(generators[i], label_data_iterators[i], gen_criterions[i], gen_optimizers[i], clip)
+#         # loss = train_generator(generators[i], label_data_iterators[i], gen_criterions[i], gen_optimizers[i])
+#         bleu_s = 0#bleu_4(TEXT, corpus, generators[i], g_sequence_len, count=100)
+#         print('Epoch [{}], Generator: {}, loss: {}, Perplexity: {}'.format(epoch, generators[i].name, loss, math.exp(loss)))
+#     print('-'*25)
 
-
+exit(0)
 d_num_class = len(label_names) + 1
 discriminator = Discriminator(d_num_class, VOCAB_SIZE, d_emb_dim, d_filter_sizes, d_num_filters, d_dropout)
 discriminator.embedding.weight.data = TEXT.vocab.vectors

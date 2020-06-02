@@ -65,37 +65,32 @@ class Seq2Seq(nn.Module):
         self.init_weights()
 
     def forward(self, src, trg, teacher_forcing_ratio = 0.5):
-        batch_size = trg.shape[1]
-        trg_len = trg.shape[0]
-        trg_vocab_size = self.decoder.output_dim
-        outputs = torch.zeros(trg_len, batch_size, trg_vocab_size)
+        outputs = torch.zeros(trg.shape[0], trg.shape[1], self.decoder.output_dim)
         if self.use_cuda:
             outputs = outputs.cuda()
-        hidden, cell = self.encoder(src)
-        input = trg[0,:]
-        for t in range(1, trg_len):
+        # print('init shapes', src.shape, trg.shape)
+        hidden, cell = self.encoder(src.T)
+        input = trg[:,0]
+        # print('hidden', hidden.shape)
+        # print('input', input.shape)
+        for t in range(1, trg.shape[1]):
             output, hidden, cell = self.decoder(input, hidden, cell)
-            outputs[t] = output
+            outputs[:, t] = output
             teacher_force = random.random() < teacher_forcing_ratio
             top1 = output.argmax(1)
-            input = trg[t] if teacher_force else top1
+            input = trg[:,t] if teacher_force else top1
         return outputs
 
-    def sample(self, src, TEXT):
-        batch_size = src.shape[0]
-        max_len = 20
-        outputs = torch.zeros(max_len, batch_size)
+    def sample(self, src, TEXT, max_len=20):
+        outputs = torch.zeros(src.shape[0], max_len)
+        # outputs = torch.zeros(batch_size, max_len)
         if self.use_cuda:
             outputs = outputs.cuda()
-        hidden, cell = self.encoder(src)
+        hidden, cell = self.encoder(src.T)
         input = src[:,0]
-        i = 1
-        while i < max_len:
+        for i in range(1, max_len):
             output, hidden, cell = self.decoder(input, hidden, cell)
-            print(output.shape)
-            outputs[i] = input = output.argmax(1)
-            i += 1
-        print(outputs.shape)
+            outputs[:,i] = input = output.argmax(1)
         return outputs
 
 
